@@ -1,0 +1,45 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix am:  <https://purl.org/archimate#> .
+@prefix jw4:  <https://w3id.org/archimate#> .
+@prefix km3: <https://meta.linked.archi/archimate3/> .
+@prefix km4: <https://meta.linked.archi/archimate4/> .
+
+# non-resolving URI for now until a more permanent one can be found
+@prefix spec: <urn:archimate:spec:> .
+
+
+## General Concepts 
+# Exact Match
+spec:Model .
+spec:Concept  skos:exactMatch  am:Concept , jw:Concept , km3:Concept , km4:Concept .
+spec:Element  skos:exactMatch  am:Element , jw:Element , km3:Element , km4:Element .
+spec:Identifier .
+
+#Close Match
+spec:Relationship  skos:closeMatch  am:Relationship , jw:Relationship .
+    # Representation diverges... see conformance tests. 
+
+# TBD
+spec:Layer . 
+spec:Aspect .
+
+
+## Core Elements
+# Business Elements
+
+# Application Elements
+
+# Technology Elements
+
+
+## Extended Elements
+# Strategy Elements
+
+# Implementation and Migration Elements
+
+# Physical Elements
+
+# Motivation Elements
+
+
+## Relationships
