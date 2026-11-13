@@ -1,17 +1,27 @@
-PREFIX spec:  <urn:archimate:spec:>
-PREFIX skos:  <http://www.w3.org/2004/02/skos/core#>
-PREFIX rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX spec: <urn:archimate:spec:>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
-# Find spec concepts with NO mapping to a given namespace
-# Run once per namespace — swap the filter string for w3id.org/archimate#, meta.linked.archi/archimate3/, etc. 
-# An empty result set means full coverage. Any rows returned are gaps.
+# Level 1 coverage check: for each ontology, list the specification concepts
+# (in the versions that ontology covers) that have no SKOS mapping into its
+# namespace. An empty result means full coverage; every row returned is a gap.
+#
+# To add an ontology or a version, add a row to VALUES.
 
-SELECT ?specConcept WHERE {
-  ?specConcept a rdfs:Class .
-  FILTER(STRSTARTS(STR(?specConcept), STR(spec:)))
-  
+SELECT ?ontology ?scheme ?specConcept WHERE {
+  VALUES (?ontology ?ns ?scheme) {
+    ("archimate_ontology" "https://purl.org/archimate#"            spec:ArchiMate32)
+    ("archimate-rdf"      "https://w3id.org/archimate#"            spec:ArchiMate32)
+    ("archimate-rdf"      "https://w3id.org/archimate#"            spec:ArchiMate40)
+    ("Linked.Archi 3"     "https://meta.linked.archi/archimate3/"  spec:ArchiMate32)
+    ("Linked.Archi 4"     "https://meta.linked.archi/archimate4/"  spec:ArchiMate40)
+  }
+
+  ?specConcept a skos:Concept ;
+               skos:inScheme ?scheme .
+
   FILTER NOT EXISTS {
-    ?specConcept skos:exactMatch|skos:closeMatch ?mapped .
-    FILTER(STRSTARTS(STR(?mapped), "https://purl.org/archimate#"))
+    ?specConcept skos:exactMatch|skos:closeMatch|skos:broadMatch|skos:narrowMatch ?mapped .
+    FILTER(STRSTARTS(STR(?mapped), ?ns))
   }
 }
+ORDER BY ?ontology ?scheme ?specConcept
