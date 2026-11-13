@@ -6,7 +6,7 @@
 @prefix km4:     <https://meta.linked.archi/archimate4/> .
 
 # Non-resolving URN for now, until the group agrees on a permanent,
-# community-owned namespace (see discussion #8, Decision 5).
+# community-owned namespace (see #4 and discussion #8).
 @prefix spec:    <urn:archimate:spec:> .
 
 # ---------------------------------------------------------------------------
