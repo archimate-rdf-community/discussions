@@ -1,45 +1,637 @@
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix am:  <https://purl.org/archimate#> .
-@prefix jw4:  <https://w3id.org/archimate#> .
-@prefix km3: <https://meta.linked.archi/archimate3/> .
-@prefix km4: <https://meta.linked.archi/archimate4/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix am:      <https://purl.org/archimate#> .
+@prefix jw:      <https://w3id.org/archimate#> .
+@prefix km3:     <https://meta.linked.archi/archimate3/> .
+@prefix km4:     <https://meta.linked.archi/archimate4/> .
 
-# non-resolving URI for now until a more permanent one can be found
-@prefix spec: <urn:archimate:spec:> .
+# Non-resolving URN for now, until the group agrees on a permanent,
+# community-owned namespace (see #4 and discussion #8).
+@prefix spec:    <urn:archimate:spec:> .
+
+# ---------------------------------------------------------------------------
+# Scope of this file
+#
+# This is a list of shared concept identifiers, NOT an ontology. Each entry is
+# a skos:Concept with a label, the specification version(s) it belongs to, and
+# mappings to the participating ontologies. Keep it that way:
+#   - no rdfs:subClassOf / skos:broader hierarchy
+#   - no rdfs:domain / rdfs:range
+#   - no choice of how relationships are represented in RDF
+# Anything beyond identity and mappings belongs in the individual ontologies.
+#
+# Initial ArchiMate 3.2 entries were taken from archimate_ontology at commit
+# 083cf53 (2026-11-04). Labels only: no specification text is copied here.
+# 4.0 scheme membership is still to be added by the 4.0 implementers.
+#
+# Versions: a concept is in the 3.2 scheme, the 4.0 scheme, or both. When a
+# concept's meaning changes between versions (e.g. 3.2 BusinessProcess vs the
+# layer-generic 4.0 Process), it gets a separate concept rather than being
+# shared across both schemes.
+#
+# Mapping properties (SKOS mappings, never OWL equivalence):
+#   skos:exactMatch   same concept
+#   skos:closeMatch   same concept, representation differs (see notes)
+#   skos:broadMatch / skos:narrowMatch   more general / more specific
+# A concept with no mapping to an ontology is a gap until resolved (#6).
+#
+# Version coverage of the participating ontologies:
+#   am:   archimate_ontology  - 3.2
+#   jw:   archimate-rdf       - 4.0 core + 3.2 compatibility profile
+#   km3:  Linked.Archi        - 3.1/3.2
+#   km4:  Linked.Archi        - 4.0
+# ---------------------------------------------------------------------------
+
+spec:ArchiMate32 a skos:ConceptScheme ;
+    skos:prefLabel "ArchiMate 3.2 concepts"@en ;
+    dcterms:source "ArchiMate 3.2 Specification, The Open Group" .
+
+spec:ArchiMate40 a skos:ConceptScheme ;
+    skos:prefLabel "ArchiMate 4.0 concepts"@en ;
+    dcterms:source "ArchiMate 4.0 Specification, The Open Group" .
 
 
-## General Concepts 
-# Exact Match
-spec:Model .
-spec:Concept  skos:exactMatch  am:Concept , jw:Concept , km3:Concept , km4:Concept .
-spec:Element  skos:exactMatch  am:Element , jw:Element , km3:Element , km4:Element .
-spec:Identifier .
 
-#Close Match
-spec:Relationship  skos:closeMatch  am:Relationship , jw:Relationship .
-    # Representation diverges... see conformance tests. 
+## General Concepts
+# Scheme membership of these general concepts in 4.0 still needs to be checked
+# against the 4.0 specification text.
 
-# TBD
-spec:Layer . 
-spec:Aspect .
+spec:Model a skos:Concept ;
+    skos:prefLabel "Model"@en ;
+    skos:inScheme spec:ArchiMate32 , spec:ArchiMate40 ;
+    skos:exactMatch am:Model .
+
+spec:Concept a skos:Concept ;
+    skos:prefLabel "Concept"@en ;
+    skos:inScheme spec:ArchiMate32 , spec:ArchiMate40 ;
+    skos:exactMatch am:Concept , jw:Concept , km3:Concept , km4:Concept .
+
+spec:Element a skos:Concept ;
+    skos:prefLabel "Element"@en ;
+    skos:inScheme spec:ArchiMate32 , spec:ArchiMate40 ;
+    skos:exactMatch am:Element , jw:Element , km3:Element , km4:Element .
+
+spec:Identifier a skos:Concept ;
+    skos:prefLabel "Identifier"@en ;
+    skos:inScheme spec:ArchiMate32 , spec:ArchiMate40 ;
+    skos:closeMatch am:identifier ;
+    skos:editorialNote "am: and jw: model the identifier as a datatype property, not a class."@en .
+
+spec:Relationship a skos:Concept ;
+    skos:prefLabel "Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 , spec:ArchiMate40 ;
+    skos:closeMatch am:Relationship , jw:Relationship ;
+    skos:editorialNote "Relationship representation diverges between the ontologies (direct predicates / RDF-star vs relationships as resources); see the conformance tests (#7)."@en .
+
+spec:RelationshipConnector a skos:Concept ;
+    skos:prefLabel "Relationship Connector"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:RelationshipConnector .
+
+spec:Layer a skos:Concept ;
+    skos:prefLabel "Layer"@en ;
+    skos:inScheme spec:ArchiMate32 , spec:ArchiMate40 ;
+    skos:closeMatch am:Layer ;
+    skos:editorialNote "am: models a layer as a class of elements (e.g. BusinessProcess is a subclass of BusinessLayer); jw: models layers as individuals of jw:Layer. See #6."@en .
+
+spec:Aspect a skos:Concept ;
+    skos:prefLabel "Aspect"@en ;
+    skos:inScheme spec:ArchiMate32 , spec:ArchiMate40 ;
+    skos:closeMatch am:Aspect ;
+    skos:editorialNote "am: uses aspects as element categories (superclasses of element types)."@en .
+
+spec:CompositeElement a skos:Concept ;
+    skos:prefLabel "Composite Element"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:CompositeElement .
+
+spec:View a skos:Concept ;
+    skos:prefLabel "View"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ArchiMateView .
+
+spec:Viewpoint a skos:Concept ;
+    skos:prefLabel "Viewpoint"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ArchiMateViewpoint .
+
+spec:Property a skos:Concept ;
+    skos:prefLabel "Property"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Property .
 
 
-## Core Elements
+## Generic Element Categories
+# The generic metamodel's element categories. In am: these are superclasses of
+# the element types; other ontologies may not declare them at all.
+
+spec:ActiveStructureElement a skos:Concept ;
+    skos:prefLabel "Active Structure Element"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ActiveStructure .
+
+spec:InternalActiveStructureElement a skos:Concept ;
+    skos:prefLabel "Internal Active Structure Element"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:InternalActiveStructure .
+
+spec:ExternalActiveStructureElement a skos:Concept ;
+    skos:prefLabel "External Active Structure Element"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ExternalActiveStructure .
+
+spec:BehaviorElement a skos:Concept ;
+    skos:prefLabel "Behavior Element"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:BehaviorAspect ;
+    skos:editorialNote "am: declares this as an aspect."@en .
+
+spec:InternalBehaviorElement a skos:Concept ;
+    skos:prefLabel "Internal Behavior Element"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:InternalBehavior .
+
+spec:ExternalBehaviorElement a skos:Concept ;
+    skos:prefLabel "External Behavior Element"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ExternalBehavior .
+
+spec:CollectiveBehaviorElement a skos:Concept ;
+    skos:prefLabel "Collective Behavior Element"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:CollectiveBehavior .
+
+spec:PassiveStructureElement a skos:Concept ;
+    skos:prefLabel "Passive Structure Element"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:PassiveStructure .
+
+spec:MotivationElement a skos:Concept ;
+    skos:prefLabel "Motivation Element"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:MotivationAspect ;
+    skos:editorialNote "am: declares this as an aspect."@en .
+
+
+## Layers
+# All layer mappings are closeMatch: see the note on spec:Layer.
+
+spec:StrategyLayer a skos:Concept ;
+    skos:prefLabel "Strategy Layer"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:StrategyLayer .
+
+spec:BusinessLayer a skos:Concept ;
+    skos:prefLabel "Business Layer"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:BusinessLayer .
+
+spec:ApplicationLayer a skos:Concept ;
+    skos:prefLabel "Application Layer"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:ApplicationLayer .
+
+spec:TechnologyLayer a skos:Concept ;
+    skos:prefLabel "Technology Layer"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:TechnologyLayer .
+
+spec:PhysicalLayer a skos:Concept ;
+    skos:prefLabel "Physical Layer"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:PhysicalLayer .
+
+spec:ImplementationAndMigrationLayer a skos:Concept ;
+    skos:prefLabel "Implementation and Migration Layer"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:ImplementationAndMigrationLayer .
+
+
+## Elements (ArchiMate 3.2)
+
+# Strategy Elements
+
+spec:Capability a skos:Concept ;
+    skos:prefLabel "Capability"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Capability .
+
+spec:CourseOfAction a skos:Concept ;
+    skos:prefLabel "Course of Action"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:CourseOfAction .
+
+spec:Resource a skos:Concept ;
+    skos:prefLabel "Resource"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Resource .
+
+spec:ValueStream a skos:Concept ;
+    skos:prefLabel "Value Stream"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ValueStream .
+
 # Business Elements
+
+spec:BusinessActor a skos:Concept ;
+    skos:prefLabel "Business Actor"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:BusinessActor .
+
+spec:BusinessCollaboration a skos:Concept ;
+    skos:prefLabel "Business Collaboration"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:BusinessCollaboration .
+
+spec:BusinessEvent a skos:Concept ;
+    skos:prefLabel "Business Event"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:BusinessEvent .
+
+spec:BusinessFunction a skos:Concept ;
+    skos:prefLabel "Business Function"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:BusinessFunction .
+
+spec:BusinessInteraction a skos:Concept ;
+    skos:prefLabel "Business Interaction"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:BusinessInteraction .
+
+spec:BusinessInterface a skos:Concept ;
+    skos:prefLabel "Business Interface"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:BusinessInterface .
+
+spec:BusinessObject a skos:Concept ;
+    skos:prefLabel "Business Object"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:BusinessObject .
+
+spec:BusinessProcess a skos:Concept ;
+    skos:prefLabel "Business Process"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:BusinessProcess .
+
+spec:BusinessRole a skos:Concept ;
+    skos:prefLabel "Business Role"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:BusinessRole .
+
+spec:BusinessService a skos:Concept ;
+    skos:prefLabel "Business Service"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:BusinessService .
+
+spec:Contract a skos:Concept ;
+    skos:prefLabel "Contract"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Contract .
+
+spec:Product a skos:Concept ;
+    skos:prefLabel "Product"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Product .
+
+spec:Representation a skos:Concept ;
+    skos:prefLabel "Representation"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Representation .
 
 # Application Elements
 
+spec:ApplicationCollaboration a skos:Concept ;
+    skos:prefLabel "Application Collaboration"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ApplicationCollaboration .
+
+spec:ApplicationComponent a skos:Concept ;
+    skos:prefLabel "Application Component"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ApplicationComponent .
+
+spec:ApplicationEvent a skos:Concept ;
+    skos:prefLabel "Application Event"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ApplicationEvent .
+
+spec:ApplicationFunction a skos:Concept ;
+    skos:prefLabel "Application Function"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ApplicationFunction .
+
+spec:ApplicationInteraction a skos:Concept ;
+    skos:prefLabel "Application Interaction"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ApplicationInteraction .
+
+spec:ApplicationInterface a skos:Concept ;
+    skos:prefLabel "Application Interface"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ApplicationInterface .
+
+spec:ApplicationProcess a skos:Concept ;
+    skos:prefLabel "Application Process"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ApplicationProcess .
+
+spec:ApplicationService a skos:Concept ;
+    skos:prefLabel "Application Service"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ApplicationService .
+
+spec:DataObject a skos:Concept ;
+    skos:prefLabel "Data Object"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:DataObject .
+
 # Technology Elements
 
+spec:Artifact a skos:Concept ;
+    skos:prefLabel "Artifact"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Artifact .
 
-## Extended Elements
-# Strategy Elements
+spec:CommunicationNetwork a skos:Concept ;
+    skos:prefLabel "Communication Network"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:CommunicationNetwork .
 
-# Implementation and Migration Elements
+spec:Device a skos:Concept ;
+    skos:prefLabel "Device"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Device .
+
+spec:Node a skos:Concept ;
+    skos:prefLabel "Node"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Node .
+
+spec:Path a skos:Concept ;
+    skos:prefLabel "Path"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Path .
+
+spec:SystemSoftware a skos:Concept ;
+    skos:prefLabel "System Software"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:SystemSoftware .
+
+spec:TechnologyCollaboration a skos:Concept ;
+    skos:prefLabel "Technology Collaboration"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:TechnologyCollaboration .
+
+spec:TechnologyEvent a skos:Concept ;
+    skos:prefLabel "Technology Event"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:TechnologyEvent .
+
+spec:TechnologyFunction a skos:Concept ;
+    skos:prefLabel "Technology Function"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:TechnologyFunction .
+
+spec:TechnologyInteraction a skos:Concept ;
+    skos:prefLabel "Technology Interaction"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:TechnologyInteraction .
+
+spec:TechnologyInterface a skos:Concept ;
+    skos:prefLabel "Technology Interface"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:TechnologyInterface .
+
+spec:TechnologyProcess a skos:Concept ;
+    skos:prefLabel "Technology Process"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:TechnologyProcess .
+
+spec:TechnologyService a skos:Concept ;
+    skos:prefLabel "Technology Service"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:TechnologyService .
 
 # Physical Elements
 
+spec:DistributionNetwork a skos:Concept ;
+    skos:prefLabel "Distribution Network"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:DistributionNetwork .
+
+spec:Equipment a skos:Concept ;
+    skos:prefLabel "Equipment"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Equipment .
+
+spec:Facility a skos:Concept ;
+    skos:prefLabel "Facility"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Facility .
+
+spec:Material a skos:Concept ;
+    skos:prefLabel "Material"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Material .
+
+# Implementation and Migration Elements
+
+spec:Deliverable a skos:Concept ;
+    skos:prefLabel "Deliverable"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Deliverable .
+
+spec:Gap a skos:Concept ;
+    skos:prefLabel "Gap"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Gap .
+
+spec:ImplementationEvent a skos:Concept ;
+    skos:prefLabel "Implementation Event"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:ImplementationEvent .
+
+spec:Plateau a skos:Concept ;
+    skos:prefLabel "Plateau"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Plateau .
+
+spec:WorkPackage a skos:Concept ;
+    skos:prefLabel "Work Package"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:WorkPackage .
+
 # Motivation Elements
 
+spec:Assessment a skos:Concept ;
+    skos:prefLabel "Assessment"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Assessment .
 
-## Relationships
+spec:Constraint a skos:Concept ;
+    skos:prefLabel "Constraint"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Constraint .
+
+spec:Driver a skos:Concept ;
+    skos:prefLabel "Driver"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Driver .
+
+spec:Goal a skos:Concept ;
+    skos:prefLabel "Goal"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Goal .
+
+spec:Meaning a skos:Concept ;
+    skos:prefLabel "Meaning"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Meaning .
+
+spec:Outcome a skos:Concept ;
+    skos:prefLabel "Outcome"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Outcome .
+
+spec:Principle a skos:Concept ;
+    skos:prefLabel "Principle"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Principle .
+
+spec:Requirement a skos:Concept ;
+    skos:prefLabel "Requirement"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Requirement .
+
+spec:Stakeholder a skos:Concept ;
+    skos:prefLabel "Stakeholder"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Stakeholder .
+
+spec:Value a skos:Concept ;
+    skos:prefLabel "Value"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Value .
+
+# Composite Elements
+
+spec:Grouping a skos:Concept ;
+    skos:prefLabel "Grouping"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Grouping .
+
+spec:Location a skos:Concept ;
+    skos:prefLabel "Location"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Location .
+
+
+## Relationships (ArchiMate 3.2)
+# closeMatch throughout: am: represents relationships as object properties, so
+# the concept matches but the representation differs. See the note on spec:Relationship.
+
+# Relationship categories
+
+spec:StructuralRelationship a skos:Concept ;
+    skos:prefLabel "Structural Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:structuralRelationship .
+
+spec:DependencyRelationship a skos:Concept ;
+    skos:prefLabel "Dependency Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:dependencyRelationship .
+
+spec:DynamicRelationship a skos:Concept ;
+    skos:prefLabel "Dynamic Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:dynamicRelationship .
+
+spec:OtherRelationship a skos:Concept ;
+    skos:prefLabel "Other Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:otherRelationship .
+
+# Relationship types
+
+spec:CompositionRelationship a skos:Concept ;
+    skos:prefLabel "Composition Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:composition .
+
+spec:AggregationRelationship a skos:Concept ;
+    skos:prefLabel "Aggregation Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:aggregation .
+
+spec:AssignmentRelationship a skos:Concept ;
+    skos:prefLabel "Assignment Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:assignment .
+
+spec:RealizationRelationship a skos:Concept ;
+    skos:prefLabel "Realization Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:realization .
+
+spec:ServingRelationship a skos:Concept ;
+    skos:prefLabel "Serving Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:serving .
+
+spec:AccessRelationship a skos:Concept ;
+    skos:prefLabel "Access Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:access .
+
+spec:InfluenceRelationship a skos:Concept ;
+    skos:prefLabel "Influence Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:influence .
+
+spec:TriggeringRelationship a skos:Concept ;
+    skos:prefLabel "Triggering Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:triggering .
+
+spec:FlowRelationship a skos:Concept ;
+    skos:prefLabel "Flow Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:flow .
+
+spec:SpecializationRelationship a skos:Concept ;
+    skos:prefLabel "Specialization Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:specialization .
+
+spec:AssociationRelationship a skos:Concept ;
+    skos:prefLabel "Association Relationship"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:closeMatch am:association .
+
+# Junctions
+
+spec:Junction a skos:Concept ;
+    skos:prefLabel "Junction"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:exactMatch am:Junction .
+
+spec:AndJunction a skos:Concept ;
+    skos:prefLabel "And Junction"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:editorialNote "am: has no class for this; it uses the am:junctionType value. Needs a conditional mapping (#6)."@en .
+
+spec:OrJunction a skos:Concept ;
+    skos:prefLabel "Or Junction"@en ;
+    skos:inScheme spec:ArchiMate32 ;
+    skos:editorialNote "am: has no class for this; it uses the am:junctionType value. Needs a conditional mapping (#6)."@en .
+
+
+# ---------------------------------------------------------------------------
+# archimate_ontology classes intentionally NOT listed as spec concepts, because
+# they structure that ontology rather than name an ArchiMate concept:
+#   am:ArchiMate, am:Domain, am:CoreDomain, am:StrategyDomain,
+#   am:MotivationDomain, am:ImplementationAndMigrationDomain,
+#   am:StructureAspect, am:GenericComposite, am:LayerComposite,
+#   am:CoreLayer, am:ExtendedLayer, am:Attribute
+# ---------------------------------------------------------------------------
